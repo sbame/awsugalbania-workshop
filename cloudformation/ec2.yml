@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Provision EC2
+
+Resources:
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        GroupDescription: Allow http on 80
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0 
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0 
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b9e92b5572fa0d1 # Ubuntu18.04, SSD Volume Type (64-bit x86) 
+      KeyName: "keypair"
+# EC2 User Data is data passed to the instance at launch time. This data performs configurations tasks, runs scripts and commands when an instance is started.
+      UserData:
+        'Fn::Base64': 
+          !Sub |
+            #!/bin/bash
+            apt -y update
+            apt install nginx -y  
+            service nginx start
+            chkconfig nginx on
+      SecurityGroups:
+        - !Ref EC2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: EC2 Instance
+        - Key: Type
+          Value: Workshop Instance

@@ -1,0 +1,100 @@
+version: 2
+jobs:
+  deploys3:
+    docker:
+      - image: circleci/python:3.7-stretch
+    working_directory: /tmp/www
+    steps:
+      - checkout
+      - run:
+          name: Installing awscli..
+          command: sudo pip install awscli
+      - run:
+          name: Creating CloudFormation Stack..
+          command: |
+            echo "Checking if stack exists ..." && \
+            if ! aws cloudformation describe-stacks --stack-name aws-ug-albania-s3; then
+              echo -e "\nStack does not exist, creating ..." && \
+              aws cloudformation create-stack --stack-name aws-ug-albania-s3 --template-body file:///tmp/www/cloudformation/s3.yml && \
+              echo "Waiting for stack to be created ..." && \
+              aws cloudformation wait stack-create-complete --stack-name aws-ug-albania-s3
+            fi
+      # - run:
+      #     name: Building Angular App!
+      #     command: |
+      #       curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+      #       sudo apt install nodejs npm -y
+      #       export NG_CLI_ANALYTICS=ci && sudo npm install -g @angular/cli
+      #       ng analytics off
+      #       cd /tmp/www/angular
+      #       sudo npm install --save-dev @angular-devkit/build-angular
+      #       ng build --prod --aot
+      - run:
+          name: Deploying master branch to S3!
+          command: |
+            # if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              aws s3 sync /tmp/www/angular/dist/angular-new s3://aws-ug-albania-s3/ --delete
+            # fi 
+  deployec2:
+    docker:
+      - image: circleci/python:3.7-stretch
+    working_directory: /tmp/www
+    steps:
+      - checkout
+      - run:
+          name: Installing awscli..
+          command: sudo pip install awscli
+      - run:
+          name: Spinning up EC2..
+          command: |
+            echo "Checking if stack exists ..." && \
+            if ! aws cloudformation describe-stacks --stack-name aws-ug-albania-ec2; then
+              echo -e "\nStack does not exist, creating ..." && \
+              aws cloudformation create-stack --stack-name aws-ug-albania-ec2 --template-body file:///tmp/www/cloudformation/ec2.yml && \
+              echo "Waiting for stack to be created ..." && \
+              aws cloudformation wait stack-create-complete --stack-name aws-ug-albania-ec2
+            fi
+  deployebs:
+    docker:
+      - image: circleci/python:3.7-stretch
+    working_directory: /tmp/www
+    steps:
+      - checkout
+      - run:
+          name: Installing awscli..
+          command: sudo pip install awscli
+      - run:
+          name: Installing ebcli..
+          command: sudo pip install awsebcli
+      - run:
+          name: Updating code on S3..
+          command: |
+            cd /tmp/www/flask/
+            zip flask.zip application.py requirements.txt
+            aws s3 sync /tmp/www/flask/ s3://aws-ug-albania/ --delete
+      - run:
+          name: Spinning up ElasticBeanstalk..
+          command: |
+            echo "Checking if stack exists ..." && \
+            if ! aws cloudformation describe-stacks --stack-name aws-ug-albania-eb; then
+              echo -e "\nStack does not exist, creating ..." && \
+              aws cloudformation create-stack --stack-name aws-ug-albania-eb --template-body file:///tmp/www/cloudformation/eb.yml && \
+              echo "Waiting for stack to be created ..." && \
+              aws cloudformation wait stack-create-complete --stack-name aws-ug-albania-eb
+            fi
+workflows:
+  version: 2
+  build:
+    jobs:
+      - deploys3:
+          filters:
+            branches:
+              only: branch
+      - deployec2:
+          filters:
+            branches:
+              only: branch
+      - deployebs:
+          filters:
+            branches:
+              only: branch

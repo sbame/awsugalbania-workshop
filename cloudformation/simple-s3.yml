@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create a single S3 bucket
+
+Resources:
+  SampleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: aws-ug-albania-s3

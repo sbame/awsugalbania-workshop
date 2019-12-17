@@ -1,12 +1,30 @@
-# awsugalbania-workshop
+# AWS User Group Albania WORKSHOP
 
-Agenda:
+CI/CD - CloudFormation
 
 AWS Logging via Console & CLI.  
-AWS EC2.  
-CloudFormation.  
 AWS Elastic Beanstalk.  
-Automatic Deploys trigered via git.  
+Circle CI.  
+AWS EC2.  
 AWS S3.  
+GIT.  
 
-*If a new topic is included, this README.md will be updated accordingly.
+## S3
+
+1- Create stack via CF  
+
+```bash
+Useful commands
+Remove Bucket: aws s3 rb s3://name --force
+Delete Stack: aws cloudformation delete-stack --stack-name name
+```
+
+## EC2
+
+1- Create keypair through the console  
+2- Create stack via CF  
+
+## EB
+
+1- Create a bucket with an initial code zip  
+2- Create stack via CF  
