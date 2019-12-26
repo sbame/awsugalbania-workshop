@@ -8,4 +8,4 @@ Resources:
   SampleBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: aws-ug-albania-s3
+      BucketName: aws-ug-albania-zips

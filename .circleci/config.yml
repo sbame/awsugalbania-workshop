@@ -63,15 +63,23 @@ jobs:
       - run:
           name: Installing awscli..
           command: sudo pip install awscli
+      # - run:
+      #     name: Installing ebcli..
+      #     command: sudo pip install awsebcli
       - run:
-          name: Installing ebcli..
-          command: sudo pip install awsebcli
-      - run:
-          name: Updating code on S3..
+          name: Creating an S3 and upload thecode as zip..
           command: |
-            cd /tmp/www/flask/
+            echo "Checking if stack exists ..." && \
+            if ! aws cloudformation describe-stacks --stack-name aws-ug-albania-zips; then
+              echo -e "\nStack does not exist, creating ..." && \
+              aws cloudformation create-stack --stack-name aws-ug-albania-zips --template-body file:///tmp/www/cloudformation/simple-s3.yml && \
+              echo "Waiting for stack to be created ..." && \
+              aws cloudformation wait stack-create-complete --stack-name aws-ug-albania-zips
+            fi
+            git clone https://github.com/ecukalla/aws-eb-workshop-flask.git
+            cd aws-eb-workshop-flask
             zip flask.zip application.py requirements.txt
-            aws s3 sync /tmp/www/flask/ s3://aws-ug-albania/ --delete
+            aws s3 sync /tmp/www/aws-eb-workshop-flask/ s3://aws-ug-albania-zips/ --delete
       - run:
           name: Spinning up ElasticBeanstalk..
           command: |
@@ -89,11 +97,11 @@ workflows:
       - deploys3:
           filters:
             branches:
-              only: cleanups
+              only: branch
       - deployec2:
           filters:
             branches:
-              only: branch
+              only: cleanups
       - deployebs:
           filters:
             branches:

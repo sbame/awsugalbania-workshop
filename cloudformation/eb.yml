@@ -16,7 +16,7 @@ Resources:
         Ref: Application
       Description: AWS ElasticBeanstalk Application Version
       SourceBundle:
-        S3Bucket: "aws-ug-albania"
+        S3Bucket: "aws-ug-albania-zips"
         S3Key: flask.zip
   ConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
