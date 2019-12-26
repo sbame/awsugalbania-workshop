@@ -27,6 +27,7 @@ jobs:
             git clone https://github.com/ecukalla/aws-eb-workshop-angular.git
             cd aws-eb-workshop-angular
             echo 'export NG_CLI_ANALYTICS=ci' >> $BASH_ENV
+            source $BASH_ENV
             curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
             sudo apt install nodejs -y
             sudo npm install -g @angular/cli
