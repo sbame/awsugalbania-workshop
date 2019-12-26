@@ -1,3 +1,6 @@
+# This CloudFrormation Template will create a 
+# simple S3 bucket with all its default policies.
+
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Create a single S3 bucket
 
@@ -5,4 +8,4 @@ Resources:
   SampleBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: aws-ug-albania-s3
+      BucketName: aws-ug-albania-zips

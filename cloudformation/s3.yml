@@ -1,3 +1,8 @@
+# Cloud Formation template.
+# Creates S3 bucket with PublicRead policies.
+# Enables Static Website Hosting on the Bucket.
+# Finally outputs the BucketSecureURL together with the associated endpoint for the site.
+
 AWSTemplateFormatVersion: 2010-09-09
 Resources:
   S3Bucket:
@@ -31,7 +36,7 @@ Outputs:
     Value: !GetAtt 
       - S3Bucket
       - WebsiteURL
-    Description: URL for website hosted on S3
+    Description: URL for the website hosted on S3
   S3BucketSecureURL:
     Value: !Join 
       - ''
