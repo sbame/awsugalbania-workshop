@@ -21,13 +21,14 @@ jobs:
             fi
       - run:
           name: Building Angular App!
-          environment:
-            NG_CLI_ANALYTICS: "ci"
+          # environment:
+          #   NG_CLI_ANALYTICS: "ci"
           command: |
             git clone https://github.com/ecukalla/aws-eb-workshop-angular.git
             cd aws-eb-workshop-angular
+            echo 'export NG_CLI_ANALYTICS=ci' >> $BASH_ENV
             curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-            sudo apt install nodejs npm -y
+            sudo apt install nodejs -y
             sudo npm install -g @angular/cli
             # ng analytics off 
             sudo npm install --save-dev @angular-devkit/build-angular
