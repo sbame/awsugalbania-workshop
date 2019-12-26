@@ -19,21 +19,24 @@ jobs:
               echo "Waiting for stack to be created ..." && \
               aws cloudformation wait stack-create-complete --stack-name aws-ug-albania-s3
             fi
-      # - run:
-      #     name: Building Angular App!
-      #     command: |
-      #       curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-      #       sudo apt install nodejs npm -y
-      #       export NG_CLI_ANALYTICS=ci && sudo npm install -g @angular/cli
-      #       ng analytics off
-      #       cd /tmp/www/angular
-      #       sudo npm install --save-dev @angular-devkit/build-angular
-      #       ng build --prod --aot
+      - run:
+          name: Building Angular App!
+          environment:
+            NG_CLI_ANALYTICS: "ci"
+          command: |
+            git clone https://github.com/ecukalla/aws-eb-workshop-angular.git
+            cd aws-eb-workshop-angular
+            curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+            sudo apt install nodejs npm -y
+            sudo npm install -g @angular/cli
+            # ng analytics off 
+            sudo npm install --save-dev @angular-devkit/build-angular
+            ng build --prod
       - run:
           name: Deploying master branch to S3!
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              aws s3 sync /tmp/www/angular/dist/angular-new s3://aws-ug-albania-s3/ --delete
+              aws s3 sync /tmp/www/aws-eb-workshop-angular/dist/angular-new s3://aws-ug-albania-s3/ --delete
             # fi 
   deployec2:
     docker:
@@ -89,7 +92,7 @@ workflows:
       - deploys3:
           filters:
             branches:
-              only: branch
+              only: cleanups
       - deployec2:
           filters:
             branches:
