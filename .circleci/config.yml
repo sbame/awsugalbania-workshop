@@ -101,8 +101,8 @@ workflows:
       - deployec2:
           filters:
             branches:
-              only: cleanups
+              only: branch
       - deployebs:
           filters:
             branches:
-              only: branch
+              only: cleanups
