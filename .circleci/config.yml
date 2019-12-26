@@ -105,4 +105,4 @@ workflows:
       - deployebs:
           filters:
             branches:
-              only: cleanups
+              only: branch
